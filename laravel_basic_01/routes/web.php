@@ -61,3 +61,17 @@ Route::get('/users/{id?}', function (string $userId = '404'){
 
 //* Route + Controller
 Route::get("/controller/hello",[App\Http\Controllers\HelloController::class,'hello']);
+
+//* Request Input
+Route::get("/input/hello",[App\Http\Controllers\InputController::class,'hello']);
+Route::post("/input/hello",[App\Http\Controllers\InputController::class,'hello']);
+Route::post("/input/hello/first",[App\Http\Controllers\InputController::class,'hello']);
+Route::post("/input/hello/data",[App\Http\Controllers\InputController::class,'returnAllInput']);
+
+
+//* Upload
+Route::post("/file/upload", [App\Http\Controllers\UploadController::class, 'upload']);
+
+
+//* Response
+Route::get("/response", [App\Http\Controllers\ResponseController::class, 'response']);

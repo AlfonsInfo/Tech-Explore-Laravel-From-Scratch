@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class InputController extends Controller
+{
+    public function hello(Request $request) : string
+    {
+        $name = $request->input("name");
+        return "Hello $name";
+    }
+    
+    
+    public function helloFirst(Request $request) : String
+    {
+        $firstName = $request->input("first.name");
+        return "Hello $firstName";
+
+    }
+
+    public function returnAllInput(Request $request) : String{
+        $data = $request->input();
+        return json_encode($data);
+    }
+
+}
