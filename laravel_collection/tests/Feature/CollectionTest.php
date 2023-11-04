@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use App\Data\Person;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertEqualsCanonicalizing;
+use function PHPUnit\Framework\assertTrue;
 
 class CollectionTest extends TestCase
 {
@@ -158,5 +161,187 @@ class CollectionTest extends TestCase
             ],
             $collection3->all()
         );
+    }
+
+
+    //* zipping operation
+    public function testCollapse()
+    {
+        $collection = collect([
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ]);
+
+        
+        $result = $collection->collapse();
+        assertEquals([1,2,3,4,5,6,7,8,9],$result->all());
+    }
+
+    public function testflatMap()
+    {
+        $collection = collect([
+            [
+                "name" => "bambang",
+                "hobbies" => ["coding", "gaming"]
+            ],
+            
+            [
+                "name" => "tono",
+                "hobbies" => ["run", "sleep"]
+            ],
+
+            [
+                "name" => "budi",
+                "hobbies" => ["coding", "sleep"]
+            ],
+        ]);
+
+        $hobbies = $collection->flatMap(function($item){
+            return $item["hobbies"];
+        })->unique();
+
+        // Log::debug($hobbies);
+        assertEquals(["coding","gaming","run","sleep"],$hobbies->all());
+
+    }
+
+    //* String Representation 
+    //* glue -> separator, final glue
+    public function testJoin()
+    {
+        $collection = collect(['alfons','setiawan','jacub']);
+        assertEquals("alfons setiawan jacub", $collection->join(" "));
+        assertEquals("alfons setiawan_jacub", $collection->join(" ","_"));
+    }
+    //* filtering 
+
+    public function testFilter()
+    {
+        $collection = collect([
+            "Eko" => 100,
+            "Budi" => 90,
+            "Bambang" => 80
+        ]);
+
+        //* function params (value ,key)
+        $result =$collection->filter(function($item){
+            return $item >= 90;
+        });
+
+        assertEquals(
+            ["Eko" => 100,
+            "Budi" => 90], $result->all()
+        );
+    }
+
+    //* hati-hati ketika menggunakan array karena indexnya -value nya beneran dihapus
+    public function testFilterMap(){
+        $collection = collect([1,2,3,4,5,6,7,8,9]);
+
+        $result = $collection->filter(function($value,$key){
+            return $value % 2 == 0;
+        });
+        
+        //* will error
+        // assertEquals([2,4,6,8],$result->all());
+        //* will not
+        assertEqualsCanonicalizing([2,4,6,8],$result->all());
+
+    }
+
+
+    //* public function
+    public function testPartition()
+    {
+        $collection = collect([
+            "Bambang" => 100,
+            "Ucup" => 100,
+            "Fares" => 40,
+            "Tono" => 60,
+            "Alfons" => 90,
+            "Udin" => 50,
+            "Lovy" => 100,
+        ]);
+
+        [$passed, $notPassed] = $collection->partition(function($value,$key){
+            return $value>60;
+        });
+
+        // Log::debug($passed);
+        // Log::debug($notPassed);
+
+        assertEquals(collect(["Bambang" => 100,"Ucup" => 100,"Alfons" => 90,"Lovy" => 100]), $passed);
+        //* change to not passed data
+        // assertEquals(collect(["Bambang" => 100,"Ucup" => 100,"Alfons" => 90,"Lovy" => 100]), $passed);
+     }
+
+
+     public function testHas(){
+        $collection = collect([2,3,4,5,1,10]);
+
+        Log::debug($collection->has(4));
+        //* Fail, check key
+        // assertEquals(true,$collection->has(10));
+        assertEquals(true,$collection->has(2));
+        assertEquals(true, $collection->hasAny(10,2));
+
+        $collection2 = collect(["bambang","ucup","udin"]);
+
+        assertEquals(true,$collection2->contains("bambang"));
+        //assertEquals(true,$collection2->contains(0,"bambang"));
+        assertEquals(true,$collection2->contains("bambang",0));
+        assertEquals(true,$collection2->contains(function($data){
+            // pengembalian strpos antara index tempat ditemukan dan false jika tidak ditemukan
+            $check = strpos($data, "in");
+            // Log::debug("$data : $check");
+            return $check !== false;
+        }));
+    }
+
+    //* groupBy -> by key & by a function
+    public function testGroup(){        
+        function groupByKey(){
+            $collection = collect([
+                [
+                    "name" => "alfons",
+                    "last_education" => "sd"
+                ],
+                [
+                    "name" => "ucup",
+                    "last_education" => "smp"
+                ],
+                [
+                    "name" => "bambang",
+                    "last_education" => "sma"
+                ],
+                [
+                    "name" => "yono",
+                    "last_education" => "s1"
+                ],
+                [
+                    "name" => "budiman",
+                    "last_education" => "s2"
+                ],
+                [
+                    "name" => "gibran",
+                    "last_education" => "s1"
+                ],
+                [
+                    "name" => "raka",
+                    "last_education" => "sma"
+                ],
+            ]);
+
+            Log::debug($collection->groupBy("last_education"));
+        }
+
+        function groupByFunction(){
+
+        }
+
+        groupByKey();
+        groupByFunction();
+        assertTrue(true);
     }
 }
