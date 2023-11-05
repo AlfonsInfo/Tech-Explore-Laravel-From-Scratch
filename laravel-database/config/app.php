@@ -182,6 +182,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'TableDbConstant' => App\Constant\TableDbConstant::class
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
