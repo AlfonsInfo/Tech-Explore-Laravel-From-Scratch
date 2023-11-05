@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('counters', function (Blueprint $table) {
             $table->string('id', 100);
             $table->integer('counter');
-            $table->text('desc');
+            $table->text('desc')->default("");
         });
     }
 
