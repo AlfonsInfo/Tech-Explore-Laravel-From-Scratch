@@ -2,10 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Rules\RegistrationRule;
+use App\Rules\UpperCase;
+use Closure;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Validator as ValidationValidator;
+use Illuminate\Validation\Rules\Password;
 
 class ValidatorTest extends TestCase
 {
@@ -178,8 +184,165 @@ class ValidatorTest extends TestCase
             self::assertNotNull($exception->validator);
             $message = $exception->validator->errors();
             Log::info($message->toJson(JSON_PRETTY_PRINT));
-
         }
+    }
 
+    public function testValidatorAdditionalValidation()
+    {
+        $data = [
+            "username" => "bambang@gmail.com",
+            "password" => "bambang@gmail.com",
+        ];
+
+
+        $rules = [
+            "username" => "required|email|max:100",
+            "password" => ["required","min:6","max:20"] 
+        ];
+
+        $validator = Validator::make($data,$rules);
+        $validator->after(function(\Illuminate\Validation\Validator $validator){
+            $data = $validator->getData();
+            if($data['username'] == $data['password']){
+                $validator->errors()->add("password", "Password tidak boleh sama dengan username");
+            }
+        });
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
+    }
+
+    public function testValidationCustom()
+    {
+        $data = [
+            "username" => "bambang@gmail.com",
+            "password" => "password",
+        ];
+
+
+        $rules = [
+            "username" => ["required", new UpperCase()],
+            "password" => ["required","min:6","max:20",] 
+        ];
+
+        $validator = Validator::make($data,$rules);
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
+    }
+
+    public function testMultipleColumnValidation()
+    {
+        $data = [
+            "username" => "bambang@gmail.com",
+            "password" => "bambang@gmail.com",
+        ];
+
+
+        $rules = [
+            "username" => ["required", new UpperCase()],
+            "password" => ["required","min:6","max:20",new RegistrationRule()] 
+        ];
+
+        $validator = Validator::make($data,$rules);
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
+    }
+
+
+    public function testCustomFunctionRule()
+    {
+        $data = [
+            "username" => "bambang@gmail.com",
+            "password" => "bambangg",
+        ];
+
+
+        $rules = [
+            "username" => ["required", new UpperCase()],
+            "password" => ["required","min:6","max:20",function($attribute, $value, Closure $fail){
+                if($value = "bambangg"){
+                    $fail("Ga boleh bosqu");
+                }
+            }] 
+        ];
+
+        $validator = Validator::make($data,$rules);
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
+    }
+
+    public function testValidatorRuleClasses()
+    {
+        $data = [
+            "username" => "bambang@gmail.com",
+            "password" => "bambangg",
+        ];
+
+
+        $rules = [
+            "username" => ["required", new In(["Alfons", "Setiawan", "Jacub"])],
+            "password" => ["required", Password::min(6)->letters()->numbers()->symbols()] 
+        ];
+
+        $validator = Validator::make($data,$rules);
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
+    }
+
+    public function testNestedArrayValidation(){
+        $data = ["address" => ["street" => ""]];
+
+        $rules = ["address.street" => "required"];
+
+        $validator = Validator::make($data,$rules);
+        self::assertNotNull($validator);
+        try{
+            $valid = $validator->validate(); //* secure not validate data.
+            Log::info(json_encode($valid,JSON_PRETTY_PRINT));
+        }catch(ValidationException $exception)
+        {
+            self::assertNotNull($exception->validator);
+            $message = $exception->validator->errors();
+            Log::info($message->toJson(JSON_PRETTY_PRINT));
+        }
     }
 }
