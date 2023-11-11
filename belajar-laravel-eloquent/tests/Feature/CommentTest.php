@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Comment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 class CommentTest extends TestCase
 {
 
@@ -28,7 +28,32 @@ class CommentTest extends TestCase
         
 
         //* multiple 
-    
+    }
+
+
+    public function testCreateUseFillable()
+    {
+        $request = [
+            "email" => "ucup@gmail.com",
+            "title" => "INFO LOKER",
+            "comment" => "Ada info loker ga ya bro?",
+        ];
+
+        $comment = new Comment($request);
+        $result = $comment->save();
+        self::assertTrue($result) ;
+        //* if filalble / guarded not set -> MassAssignmentException
+
+        //* shortcut Way
+        $request = [
+            "email" => "udin@gmail.com",
+            "title" => "INFO LOKER",
+            "comment" => "Ada info loker ga ya bro?",
+        ];
+        $comment = Comment::query()->create($request);
+        // Log::info($comment->email);
+
+        self::assertEquals("udin@gmail.com", $comment->email);
     }
 
 }
