@@ -18,9 +18,10 @@ class ApiAuthMiddleware
         if(!$user)
         {
             $authenticate = false;
+        }else{
+            Auth::login($user); //* login need authenticable
         }
 
-        Auth::login($user); //* login need authenticable
         //Auth::user() --> get who is login 
 
         if(!$token)
@@ -35,7 +36,7 @@ class ApiAuthMiddleware
                     'errors' =>[
                         "message" =>["unauthorized"]
                     ]
-            ])->setStatusCode(200);
+            ])->setStatusCode(401);
         }
     }
 }

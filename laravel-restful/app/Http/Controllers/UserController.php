@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -46,7 +47,7 @@ class UserController extends Controller
                         "username or password wrong"
                     ]
                 ]
-            ]),401);
+            ],401));
         }
 
         $user->token = Str::uuid()->toString();
@@ -58,5 +59,41 @@ class UserController extends Controller
     public function get() : UserResource{
         $User = Auth::user();
         return new UserResource($User);
+    }
+
+
+    public function update(UserUpdateRequest $request) : UserResource{
+        $data = $request->validated();
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if(isset($data['name']))
+        {
+            $user->name = $data['name'];
+        }
+
+        if(isset($data['password']))
+        {
+            $user->password = Hash::make($data["password"]);
+        }
+
+        $user->save();
+        return new UserResource($user);
+    }
+
+
+    public function logout(Request $requst) : JsonResponse
+    {
+        $user = Auth::user();
+        $user->token = null;
+        
+        
+        /** @var User $user */
+        $user->save();
+
+        return response()->json([
+            "data" => true
+        ]);
     }
 }
