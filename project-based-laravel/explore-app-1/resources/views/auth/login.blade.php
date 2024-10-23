@@ -40,8 +40,10 @@
             @endif
 
             <x-primary-button class="ms-3">
-                {{ __('Log in') }}
+                {{ __('Masuk') }}
             </x-primary-button>
         </div>
     </form>
 </x-guest-layout>
+
+
