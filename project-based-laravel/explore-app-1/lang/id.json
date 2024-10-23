@@ -1,6 +1,8 @@
 {
     "Log in": "Masuk",
     "Log out": "Keluar",
+    "Log Out" : "Keluar",
+    "Profile" : "Profil",
     "Forgot password": "Lupa kata sandi",
     "Email": "Email",
     "Password": "Kata sandi",
@@ -8,5 +10,22 @@
     "Forgot your password?": "Lupa kata sandi?",
     "Don't have an account?": "Belum punya akun?",
     "Sign up": "Daftar",
-    "Sign in": "Masuk"
+    "Sign in": "Masuk",
+    "You're logged in!": "Anda sudah masuk!",
+    "Profile Information": "Informasi Profil",
+    "Update your account's profile information and email address.": "Perbarui informasi profil akun dan alamat email Anda.",
+    "Update Profile": "Perbarui Profil",
+    "Update Password": "Perbarui Kata Sandi",
+    "Current Password": "Kata Sandi Saat Ini",
+    "New Password": "Kata Sandi Baru",
+    "Confirm Password": "Konfirmasi Kata Sandi",
+    "Two factor authentication": "Autentikasi dua faktor",
+    "Two factor authentication is now enabled. Scan the following QR code using your phone's authenticator application.": "Autentikasi dua faktor sekarang diaktifkan. Pindai kode QR berikut menggunakan aplikasi otentikator ponsel Anda.",
+    "Two factor authentication is now disabled.": "Autentikasi dua faktor sekarang dinonaktifkan.",
+    "Enable": "Aktifkan",
+    "Disable": "Nonaktifkan",
+    "QR Code": "Kode QR",
+    "Save": "Simpan",
+    "Delete Account": "Hapus Akun",
+    "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "Setelah akun Anda dihapus, semua sumber daya dan data akan dihapus secara permanen. Sebelum menghapus akun Anda, harap unduh semua data atau informasi yang ingin Anda simpan."
 }
